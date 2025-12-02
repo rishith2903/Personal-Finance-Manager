@@ -16,18 +16,21 @@ public class TransactionController {
   private final TransactionParserService parserService;
   private final AuthUtil authUtil;
 
-  public TransactionController(TransactionRepository repository, TransactionParserService parserService, AuthUtil authUtil) {
+  public TransactionController(TransactionRepository repository, TransactionParserService parserService,
+      AuthUtil authUtil) {
     this.repository = repository;
     this.parserService = parserService;
     this.authUtil = authUtil;
   }
 
-  public record ProcessRequest(String rawMessage) {}
+  public record ProcessRequest(String rawMessage) {
+  }
 
   @PostMapping("/process")
   public ResponseEntity<?> process(@RequestBody ProcessRequest req, HttpServletRequest request) {
     String userId = authUtil.getUserId(request);
-    if (userId == null) return ResponseEntity.status(401).body("Unauthorized");
+    if (userId == null)
+      return ResponseEntity.status(401).body("Unauthorized");
     Transaction t = parserService.parse(req.rawMessage());
     t.setUserId(userId);
     repository.save(t);
@@ -36,16 +39,43 @@ public class TransactionController {
 
   @GetMapping
   public ResponseEntity<List<Transaction>> list(
-    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-    HttpServletRequest request
-  ) {
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+      HttpServletRequest request) {
     String userId = authUtil.getUserId(request);
-    if (userId == null) return ResponseEntity.status(401).build();
+    if (userId == null)
+      return ResponseEntity.status(401).build();
 
     if (from != null && to != null) {
-      return ResponseEntity.ok(repository.findByUserIdAndTransactionDateBetweenOrderByTransactionDateDesc(userId, from, to));
+      return ResponseEntity
+          .ok(repository.findByUserIdAndTransactionDateBetweenOrderByTransactionDateDesc(userId, from, to));
     }
     return ResponseEntity.ok(repository.findByUserIdOrderByTransactionDateDesc(userId));
+  }
+
+  @PostMapping("/manual")
+  public ResponseEntity<?> createManual(@RequestBody ManualTransactionRequest req, HttpServletRequest request) {
+    String userId = authUtil.getUserId(request);
+    if (userId == null)
+      return ResponseEntity.status(401).body("Unauthorized");
+
+    // Validate type
+    if (!req.type().equals("debit") && !req.type().equals("credit")) {
+      return ResponseEntity.badRequest().body("Type must be 'debit' or 'credit'");
+    }
+
+    Transaction t = Transaction.builder()
+        .userId(userId)
+        .amount(req.amount())
+        .merchant(req.merchant())
+        .category(req.category())
+        .type(req.type())
+        .transactionDate(req.transactionDate())
+        .rawMessage(req.description() != null ? req.description() : "Manual entry")
+        .balance(req.balance())
+        .build();
+
+    repository.save(t);
+    return ResponseEntity.ok(t);
   }
 }
