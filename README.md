@@ -598,34 +598,11 @@ The Personal Finance Manager uses a **Rule-Based AI System** combined with **Sta
 
 - **Social Features**: Add the ability to share anonymized spending insights with friends, compare savings rates within peer groups, and participate in financial challenges.
 
----
 
-## 👨‍💻 Contributors
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/rishith2903">
-        <img src="https://github.com/rishith2903.png" width="100px;" alt="Rishith Kumar Pachipulusu"/>
-        <br />
-        <sub><b>Rishith Kumar Pachipulusu</b></sub>
-      </a>
-      <br />
-      <a href="https://github.com/rishith2903">🐙 GitHub</a> •
-      <a href="https://www.linkedin.com/in/rishith-kumar-pachipulusu-2748b4380/">💼 LinkedIn</a>
-      <br />
-      <sub>Full Stack Developer</sub>
-    </td>
-  </tr>
-</table>
 
 ---
 
-## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
 
 ## 🙏 Acknowledgments
 
