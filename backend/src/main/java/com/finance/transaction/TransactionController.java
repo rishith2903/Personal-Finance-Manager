@@ -15,12 +15,14 @@ public class TransactionController {
   private final TransactionRepository repository;
   private final TransactionParserService parserService;
   private final AuthUtil authUtil;
+  private final com.finance.insight.InsightService insightService;
 
   public TransactionController(TransactionRepository repository, TransactionParserService parserService,
-      AuthUtil authUtil) {
+      AuthUtil authUtil, com.finance.insight.InsightService insightService) {
     this.repository = repository;
     this.parserService = parserService;
     this.authUtil = authUtil;
+    this.insightService = insightService;
   }
 
   public record ProcessRequest(String rawMessage) {
@@ -34,6 +36,11 @@ public class TransactionController {
     Transaction t = parserService.parse(req.rawMessage());
     t.setUserId(userId);
     repository.save(t);
+
+    // Update insights for the transaction month
+    String month = java.time.YearMonth.from(t.getTransactionDate()).toString();
+    insightService.generateAndUpsert(userId, month);
+
     return ResponseEntity.ok(t);
   }
 
@@ -76,6 +83,11 @@ public class TransactionController {
         .build();
 
     repository.save(t);
+
+    // Update insights for the transaction month
+    String month = java.time.YearMonth.from(t.getTransactionDate()).toString();
+    insightService.generateAndUpsert(userId, month);
+
     return ResponseEntity.ok(t);
   }
 }
