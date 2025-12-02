@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Tag, Building2 } from 'lucide-react';
+import { Tag, Building2 } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 
 const CATEGORIES = {
@@ -185,24 +185,56 @@ export function ManualTransactionForm({ onTransactionAdded }) {
                         </div>
                     </div>
 
-                    {/* Date */}
+                    {/* Date - DD/MM/YYYY Manual Input */}
                     <div>
-                        <label htmlFor="transactionDate" className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                             Date *
                         </label>
-                        <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <div className="grid grid-cols-3 gap-2">
                             <input
-                                type="date"
-                                id="transactionDate"
-                                name="transactionDate"
-                                value={formData.transactionDate}
-                                onChange={handleChange}
-                                max={new Date().toISOString().split('T')[0]}
+                                type="number"
+                                value={formData.transactionDate.split('-')[2] || ''}
+                                onChange={(e) => {
+                                    const day = e.target.value.padStart(2, '0');
+                                    const [year, month] = formData.transactionDate.split('-');
+                                    setFormData(prev => ({ ...prev, transactionDate: `${year}-${month}-${day}` }));
+                                }}
+                                min="1"
+                                max="31"
                                 required
-                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center"
+                                placeholder="DD"
+                            />
+                            <input
+                                type="number"
+                                value={formData.transactionDate.split('-')[1] || ''}
+                                onChange={(e) => {
+                                    const month = e.target.value.padStart(2, '0');
+                                    const [year, , day] = formData.transactionDate.split('-');
+                                    setFormData(prev => ({ ...prev, transactionDate: `${year}-${month}-${day}` }));
+                                }}
+                                min="1"
+                                max="12"
+                                required
+                                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center"
+                                placeholder="MM"
+                            />
+                            <input
+                                type="number"
+                                value={formData.transactionDate.split('-')[0] || ''}
+                                onChange={(e) => {
+                                    const year = e.target.value;
+                                    const [, month, day] = formData.transactionDate.split('-');
+                                    setFormData(prev => ({ ...prev, transactionDate: `${year}-${month}-${day}` }));
+                                }}
+                                min="2000"
+                                max={new Date().getFullYear()}
+                                required
+                                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center"
+                                placeholder="YYYY"
                             />
                         </div>
+                        <p className="mt-1 text-xs text-gray-500">Format: DD/MM/YYYY</p>
                     </div>
                 </div>
 

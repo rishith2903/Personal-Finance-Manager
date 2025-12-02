@@ -11,7 +11,7 @@ export function TransactionList({ transactions }) {
 
   const filtered = transactions.filter(t => {
     const matchesSearch = t.merchant.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         t.category.toLowerCase().includes(searchTerm.toLowerCase());
+      t.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
     const matchesType = selectedType === 'all' || t.type === selectedType;
 
@@ -94,17 +94,16 @@ export function TransactionList({ transactions }) {
             {filtered.map((transaction) => (
               <tr key={transaction.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {new Date(transaction.transactionDate).toLocaleDateString('en-IN', {
-                    day: 'numeric',
-                    month: 'short',
+                  {new Date(transaction.transactionDate).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
                     year: 'numeric'
                   })}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${
-                      transaction.type === 'credit' ? 'bg-emerald-100' : 'bg-red-100'
-                    }`}>
+                    <div className={`p-2 rounded-lg ${transaction.type === 'credit' ? 'bg-emerald-100' : 'bg-red-100'
+                      }`}>
                       {transaction.type === 'credit' ? (
                         <ArrowUpRight className="w-4 h-4 text-emerald-600" />
                       ) : (
@@ -122,18 +121,16 @@ export function TransactionList({ transactions }) {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                    transaction.type === 'credit'
+                  <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${transaction.type === 'credit'
                       ? 'bg-emerald-100 text-emerald-700'
                       : 'bg-red-100 text-red-700'
-                  }`}>
+                    }`}>
                     {transaction.type}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
-                  <span className={`text-sm font-semibold ${
-                    transaction.type === 'credit' ? 'text-emerald-600' : 'text-gray-900'
-                  }`}>
+                  <span className={`text-sm font-semibold ${transaction.type === 'credit' ? 'text-emerald-600' : 'text-gray-900'
+                    }`}>
                     {transaction.type === 'credit' ? '+' : '-'}₹{transaction.amount.toFixed(2)}
                   </span>
                 </td>
