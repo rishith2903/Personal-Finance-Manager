@@ -6,6 +6,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface TransactionRepository extends MongoRepository<Transaction, String> {
-  List<Transaction> findByUserIdAndTransactionDateBetweenOrderByTransactionDateDesc(String userId, LocalDate from, LocalDate to);
+  List<Transaction> findByUserIdAndTransactionDateBetweenOrderByTransactionDateDesc(String userId, LocalDate from,
+      LocalDate to);
+
   List<Transaction> findByUserIdOrderByTransactionDateDesc(String userId);
+
+  List<Transaction> findByUserId(String userId);
 }

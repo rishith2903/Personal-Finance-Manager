@@ -1,5 +1,6 @@
 package com.finance.auth;
 
+import com.finance.demo.DemoDataService;
 import com.finance.security.JwtService;
 import com.finance.user.User;
 import com.finance.user.UserRepository;
@@ -18,12 +19,15 @@ public class AuthController {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final DemoDataService demoDataService;
 
-  public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+  public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
+      AuthenticationManager authenticationManager, DemoDataService demoDataService) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.jwtService = jwtService;
     this.authenticationManager = authenticationManager;
+    this.demoDataService = demoDataService;
   }
 
   @PostMapping("/signup")
@@ -32,13 +36,14 @@ public class AuthController {
       return ResponseEntity.badRequest().body("Email already registered");
     }
     User user = User.builder()
-      .email(req.email())
-      .username(req.username())
-      .passwordHash(passwordEncoder.encode(req.password()))
-      .build();
+        .email(req.email())
+        .username(req.username())
+        .passwordHash(passwordEncoder.encode(req.password()))
+        .build();
     userRepository.save(user);
 
-    String token = jwtService.generateToken(user.getEmail(), java.util.Map.of("uid", user.getId(), "username", user.getUsername()));
+    String token = jwtService.generateToken(user.getEmail(),
+        java.util.Map.of("uid", user.getId(), "username", user.getUsername()));
     return ResponseEntity.ok(new AuthResponse(token, user.getEmail(), user.getUsername()));
   }
 
@@ -46,7 +51,8 @@ public class AuthController {
   public ResponseEntity<?> login(@RequestBody LoginRequest req) {
     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.email(), req.password()));
     User user = userRepository.findByEmail(req.email()).orElseThrow();
-    String token = jwtService.generateToken(user.getEmail(), java.util.Map.of("uid", user.getId(), "username", user.getUsername()));
+    String token = jwtService.generateToken(user.getEmail(),
+        java.util.Map.of("uid", user.getId(), "username", user.getUsername()));
     return ResponseEntity.ok(new AuthResponse(token, user.getEmail(), user.getUsername()));
   }
 
@@ -71,7 +77,11 @@ public class AuthController {
       userRepository.save(user);
     }
 
-    String token = jwtService.generateToken(user.getEmail(), java.util.Map.of("uid", user.getId(), "username", user.getUsername()));
+    // Seed demo data if not already present
+    demoDataService.seedDemoData(user.getId());
+
+    String token = jwtService.generateToken(user.getEmail(),
+        java.util.Map.of("uid", user.getId(), "username", user.getUsername()));
     return ResponseEntity.ok(new AuthResponse(token, user.getEmail(), user.getUsername()));
   }
 }
