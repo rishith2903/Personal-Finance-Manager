@@ -1,0 +1,22 @@
+# Maven/Gradle
+/target/
+/.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+logs/
+*.log
+
+# Env & Secrets
+.env
+
+# IDE
+.idea/
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+
+# Misc
+*.swp

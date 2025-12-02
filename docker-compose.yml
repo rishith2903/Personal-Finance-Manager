@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+  mongo:
+    image: mongo:6
+    container_name: pfm-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+  backend:
+    build:
+      context: ./backend-spring
+    container_name: pfm-backend
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/finance
+      - JWT_SECRET=${JWT_SECRET:-ZmFrZS1qd3Qtc2VjcmV0LXNldC1tZS1pbi1wcm9k}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+    ports:
+      - "8080:8080"
+volumes:
+  mongo-data:

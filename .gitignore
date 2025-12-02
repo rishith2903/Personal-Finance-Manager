@@ -1,0 +1,36 @@
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.env
+
+# Java / Maven (backend-spring)
+backend-spring/target/
+backend-spring/.mvn/wrapper/maven-wrapper.jar
+backend-spring/.idea/
+backend-spring/.settings/
+backend-spring/.classpath
+backend-spring/.project
+*.iml
+
+# Logs
+backend-spring/logs/
+*.log
