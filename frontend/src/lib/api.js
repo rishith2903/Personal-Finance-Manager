@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080'||'https://ai-personal-finance-manager-backend.onrender.com';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://personal-finance-manager-f6sr.onrender.com';
 
 const TOKEN_KEY = 'auth_token';
 
