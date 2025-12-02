@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DollarSign, Calendar, Tag, Building2 } from 'lucide-react';
+import { Calendar, Tag, Building2 } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 
 const CATEGORIES = {
@@ -112,7 +112,7 @@ export function ManualTransactionForm({ onTransactionAdded }) {
         <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-blue-100 rounded-lg">
-                    <DollarSign className="w-6 h-6 text-blue-600" />
+                    <span className="text-2xl">₹</span>
                 </div>
                 <div>
                     <h2 className="text-xl font-semibold text-gray-900">Manual Entry</h2>
@@ -169,7 +169,7 @@ export function ManualTransactionForm({ onTransactionAdded }) {
                             Amount *
                         </label>
                         <div className="relative">
-                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-semibold text-gray-500">₹</span>
                             <input
                                 type="number"
                                 id="amount"
