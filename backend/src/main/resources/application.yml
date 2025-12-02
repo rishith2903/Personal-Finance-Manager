@@ -15,4 +15,4 @@ app:
     expirationMs: 2592000000 # 30 days
 
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173 || https://aithlete-frontend.vercel.app/ }
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,https://personal-finance-manager-neon.vercel.app}
