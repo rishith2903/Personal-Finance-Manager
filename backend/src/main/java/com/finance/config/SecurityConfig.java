@@ -50,6 +50,10 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .anyRequest().authenticated())
+        .exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException) -> {
+          response.setStatus(401);
+          response.getWriter().write("Unauthorized: " + authException.getMessage());
+        }))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();

@@ -31,12 +31,16 @@ export function DashboardPage() {
     try {
       const txData = await apiFetch(`/api/transactions?from=${startDate}&to=${endDate}`);
       setTransactions(txData || []);
-    } catch {}
+    } catch (err) {
+      console.error("Failed to fetch transactions:", err);
+    }
 
     try {
       const insightData = await apiFetch(`/api/insights?month=${month}`);
       setInsight(insightData || null);
-    } catch {}
+    } catch (err) {
+      console.error("Failed to fetch insights:", err);
+    }
 
     setLoading(false);
   };

@@ -54,11 +54,16 @@ public class TransactionController {
     if (userId == null)
       return ResponseEntity.status(401).build();
 
+    System.out.println("TransactionController: list called for user " + userId + " from " + from + " to " + to);
     if (from != null && to != null) {
-      return ResponseEntity
-          .ok(repository.findByUserIdAndTransactionDateBetweenOrderByTransactionDateDesc(userId, from, to));
+      List<Transaction> result = repository.findByUserIdAndTransactionDateBetweenOrderByTransactionDateDesc(userId,
+          from, to);
+      System.out.println("Found " + result.size() + " transactions");
+      return ResponseEntity.ok(result);
     }
-    return ResponseEntity.ok(repository.findByUserIdOrderByTransactionDateDesc(userId));
+    List<Transaction> result = repository.findByUserIdOrderByTransactionDateDesc(userId);
+    System.out.println("Found " + result.size() + " transactions (no date filter)");
+    return ResponseEntity.ok(result);
   }
 
   @PostMapping("/manual")

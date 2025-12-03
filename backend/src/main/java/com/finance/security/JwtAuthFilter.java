@@ -32,6 +32,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      System.out.println("JwtAuthFilter: No valid Auth header found (Header: " + authHeader + ")");
       filterChain.doFilter(request, response);
       return;
     }
