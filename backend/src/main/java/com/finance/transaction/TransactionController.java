@@ -49,6 +49,7 @@ public class TransactionController {
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
       HttpServletRequest request) {
+    System.out.println("TransactionController: list called");
     String userId = authUtil.getUserId(request);
     if (userId == null)
       return ResponseEntity.status(401).build();

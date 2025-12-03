@@ -28,7 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-    throws ServletException, IOException {
+      throws ServletException, IOException {
 
     String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -40,15 +40,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     try {
       Claims claims = jwtService.parse(token);
       String email = claims.getSubject();
+      System.out.println("JwtAuthFilter: Processing token for email: " + email);
 
       if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        System.out.println("JwtAuthFilter: User loaded: " + userDetails.getUsername());
+
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-          userDetails, null, userDetails.getAuthorities());
+            userDetails, null, userDetails.getAuthorities());
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        response.setHeader("X-Auth-User", email);
+        response.setHeader("X-Auth-Success", "true");
       }
-    } catch (Exception ignored) {
+    } catch (Exception e) {
+      System.out.println("JwtAuthFilter: Token validation failed: " + e.getMessage());
+      e.printStackTrace();
+      response.setHeader("X-Auth-Error", e.getMessage());
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return;
     }
 
     filterChain.doFilter(request, response);
