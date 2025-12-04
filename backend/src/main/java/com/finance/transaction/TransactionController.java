@@ -45,25 +45,37 @@ public class TransactionController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Transaction>> list(
+  public ResponseEntity<?> list(
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
       HttpServletRequest request) {
-    System.out.println("TransactionController: list called");
-    String userId = authUtil.getUserId(request);
-    if (userId == null)
-      return ResponseEntity.status(401).build();
+    try {
+      System.out.println("TransactionController: list called");
+      String userId = authUtil.getUserId(request);
+      System.out.println("TransactionController: userId = " + userId);
 
-    System.out.println("TransactionController: list called for user " + userId + " from " + from + " to " + to);
-    if (from != null && to != null) {
-      List<Transaction> result = repository.findByUserIdAndTransactionDateBetweenOrderByTransactionDateDesc(userId,
-          from, to);
-      System.out.println("Found " + result.size() + " transactions");
+      if (userId == null) {
+        System.out.println("TransactionController: userId is null, returning 401");
+        return ResponseEntity.status(401).body("Unauthorized - no user ID");
+      }
+
+      System.out.println("TransactionController: Querying for user " + userId + " from " + from + " to " + to);
+
+      List<Transaction> result;
+      if (from != null && to != null) {
+        result = repository.findByUserIdAndTransactionDateBetweenOrderByTransactionDateDesc(userId, from, to);
+      } else {
+        result = repository.findByUserIdOrderByTransactionDateDesc(userId);
+      }
+
+      System.out.println("TransactionController: Found " + result.size() + " transactions");
       return ResponseEntity.ok(result);
+
+    } catch (Exception e) {
+      System.out.println("TransactionController: ERROR - " + e.getClass().getName() + ": " + e.getMessage());
+      e.printStackTrace();
+      return ResponseEntity.status(500).body("Error: " + e.getMessage());
     }
-    List<Transaction> result = repository.findByUserIdOrderByTransactionDateDesc(userId);
-    System.out.println("Found " + result.size() + " transactions (no date filter)");
-    return ResponseEntity.ok(result);
   }
 
   @PostMapping("/manual")

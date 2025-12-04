@@ -18,9 +18,23 @@ public class InsightController {
 
   @GetMapping
   public ResponseEntity<?> get(@RequestParam(required = false) String month, HttpServletRequest request) {
-    String userId = authUtil.getUserId(request);
-    if (userId == null) return ResponseEntity.status(401).body("Unauthorized");
-    // Generate or refresh and return current month insight
-    return ResponseEntity.ok(service.generateAndUpsert(userId, month));
+    try {
+      System.out.println("InsightController: get called for month " + month);
+      String userId = authUtil.getUserId(request);
+      System.out.println("InsightController: userId = " + userId);
+
+      if (userId == null) {
+        return ResponseEntity.status(401).body("Unauthorized - no user ID");
+      }
+
+      Object result = service.generateAndUpsert(userId, month);
+      System.out.println("InsightController: Got result");
+      return ResponseEntity.ok(result);
+
+    } catch (Exception e) {
+      System.out.println("InsightController: ERROR - " + e.getClass().getName() + ": " + e.getMessage());
+      e.printStackTrace();
+      return ResponseEntity.status(500).body("Error: " + e.getMessage());
+    }
   }
 }
