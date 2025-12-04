@@ -93,4 +93,13 @@ public class SecurityConfig {
     source.registerCorsConfiguration("/**", config);
     return source;
   }
+
+  @Bean
+  public org.springframework.boot.web.servlet.FilterRegistrationBean<JwtAuthFilter> tenantFilterRegistration(
+      JwtAuthFilter filter) {
+    org.springframework.boot.web.servlet.FilterRegistrationBean<JwtAuthFilter> registration = new org.springframework.boot.web.servlet.FilterRegistrationBean<>(
+        filter);
+    registration.setEnabled(false);
+    return registration;
+  }
 }

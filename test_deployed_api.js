@@ -47,6 +47,7 @@ async function test() {
         });
 
         console.log('Transactions Status:', txRes.statusCode);
+        console.log('Transactions Headers:', JSON.stringify(txRes.headers, null, 2));
         console.log('Transactions Body Preview:', txRes.body.substring(0, 500));
 
         if (txRes.statusCode === 200) {
