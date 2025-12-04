@@ -15,7 +15,12 @@ export async function apiFetch(path, options = {}) {
   const headers = new Headers(options.headers || {});
   headers.set('Content-Type', 'application/json');
   const token = getToken();
-  if (token) headers.set('Authorization', `Bearer ${token}`);
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+    console.log(`[API] Token present, length: ${token.length}`);
+  } else {
+    console.log('[API] WARNING: No token found in localStorage!');
+  }
 
   console.log(`[API] Requesting: ${API_BASE}${path}`); // Debug log
 

@@ -1,8 +1,11 @@
 package com.finance.security;
 
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -11,12 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtAuthFilter implements Filter {
   private final JwtService jwtService;
   private final UserDetailsService userDetailsService;
 
@@ -26,12 +27,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
+  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+      throws IOException, ServletException {
+
+    HttpServletRequest request = (HttpServletRequest) servletRequest;
+    HttpServletResponse response = (HttpServletResponse) servletResponse;
 
     String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    System.out.println("JwtAuthFilter: Processing request to " + request.getRequestURI());
+
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-      System.out.println("JwtAuthFilter: No valid Auth header found (Header: " + authHeader + ")");
+      System.out.println("JwtAuthFilter: No valid Auth header found");
       filterChain.doFilter(request, response);
       return;
     }
@@ -51,11 +57,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
+        System.out.println("JwtAuthFilter: Authentication set in SecurityContext");
         response.setHeader("X-Auth-User", email);
         response.setHeader("X-Auth-Success", "true");
         response.setHeader("X-Auth-Debug", "Auth-Set");
       } else {
-        response.setHeader("X-Auth-Debug", "Email-Null-Or-Context-Set: " + email);
+        System.out.println("JwtAuthFilter: Skipped auth set - email null or already authenticated");
+        response.setHeader("X-Auth-Debug", "Skipped: " + email);
       }
     } catch (Exception e) {
       System.out.println("JwtAuthFilter: Token validation failed: " + e.getMessage());

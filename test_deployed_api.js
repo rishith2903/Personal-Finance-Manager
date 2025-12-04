@@ -14,50 +14,35 @@ function request(options, data) {
 }
 
 async function test() {
-    try {
-        console.log('1. Testing Demo Login on Render...');
-        const loginData = JSON.stringify({});
-        const loginRes = await request({
-            hostname: 'personal-finance-manager-f6sr.onrender.com',
-            path: '/api/auth/demo-login',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': loginData.length
-            }
-        }, loginData);
+    console.log('--- Step 1: Login ---');
+    const loginData = JSON.stringify({});
+    const loginRes = await request({
+        hostname: 'personal-finance-manager-f6sr.onrender.com',
+        path: '/api/auth/demo-login',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': loginData.length }
+    }, loginData);
 
-        console.log('Login Status:', loginRes.statusCode);
-        if (loginRes.statusCode !== 200) {
-            console.error('Login failed:', loginRes.body);
-            return;
-        }
+    console.log('Login Status:', loginRes.statusCode);
+    const token = JSON.parse(loginRes.body).token;
+    console.log('Got token');
 
-        const token = JSON.parse(loginRes.body).token;
-        console.log('Token received. Length:', token.length);
+    console.log('');
+    console.log('--- Step 2: Fetch Transactions ---');
 
-        console.log('\n2. Fetching Transactions (No Filters)...');
-        const txRes = await request({
-            hostname: 'personal-finance-manager-f6sr.onrender.com',
-            path: '/api/transactions',
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+    const txRes = await request({
+        hostname: 'personal-finance-manager-f6sr.onrender.com',
+        path: '/api/transactions',
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token }
+    });
 
-        console.log('Transactions Status:', txRes.statusCode);
-        console.log('Transactions Headers:', JSON.stringify(txRes.headers, null, 2));
-        console.log('Transactions Body Preview:', txRes.body.substring(0, 500));
-
-        if (txRes.statusCode === 200) {
-            const txs = JSON.parse(txRes.body);
-            console.log('Transaction count:', txs.length);
-        }
-
-    } catch (err) {
-        console.error('Test failed:', err);
-    }
+    console.log('TX Status:', txRes.statusCode);
+    console.log('x-auth-success:', txRes.headers['x-auth-success']);
+    console.log('x-auth-user:', txRes.headers['x-auth-user']);
+    console.log('x-auth-debug:', txRes.headers['x-auth-debug']);
+    console.log('x-auth-error:', txRes.headers['x-auth-error']);
+    console.log('Body:', txRes.body);
 }
 
-test();
+test().catch(console.error);
