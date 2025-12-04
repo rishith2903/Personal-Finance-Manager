@@ -22,23 +22,27 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import com.finance.security.JwtService;
+
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
-  private final JwtAuthFilter jwtAuthFilter;
+  private final JwtService jwtService;
   private final UserDetailsService userDetailsService;
 
   @Value("${cors.allowed-origins}")
   private String allowedOrigins;
 
-  public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserDetailsService userDetailsService) {
-    this.jwtAuthFilter = jwtAuthFilter;
+  public SecurityConfig(JwtService jwtService, UserDetailsService userDetailsService) {
+    this.jwtService = jwtService;
     this.userDetailsService = userDetailsService;
   }
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    JwtAuthFilter jwtAuthFilter = new JwtAuthFilter(jwtService, userDetailsService);
+
     http
         .csrf(csrf -> csrf.disable())
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -92,14 +96,5 @@ public class SecurityConfig {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);
     return source;
-  }
-
-  @Bean
-  public org.springframework.boot.web.servlet.FilterRegistrationBean<JwtAuthFilter> tenantFilterRegistration(
-      JwtAuthFilter filter) {
-    org.springframework.boot.web.servlet.FilterRegistrationBean<JwtAuthFilter> registration = new org.springframework.boot.web.servlet.FilterRegistrationBean<>(
-        filter);
-    registration.setEnabled(false);
-    return registration;
   }
 }
