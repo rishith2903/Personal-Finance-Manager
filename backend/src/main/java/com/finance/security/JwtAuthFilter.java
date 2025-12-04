@@ -1,7 +1,6 @@
 package com.finance.security;
 
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -10,14 +9,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
-public class JwtAuthFilter implements Filter {
+public class JwtAuthFilter extends GenericFilterBean {
   private final JwtService jwtService;
   private final UserDetailsService userDetailsService;
 
@@ -34,10 +35,10 @@ public class JwtAuthFilter implements Filter {
     HttpServletResponse response = (HttpServletResponse) servletResponse;
 
     String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    System.out.println("JwtAuthFilter: Processing request to " + request.getRequestURI());
+    System.out.println("JwtAuthFilter: Processing " + request.getMethod() + " " + request.getRequestURI());
 
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-      System.out.println("JwtAuthFilter: No valid Auth header found");
+      System.out.println("JwtAuthFilter: No Bearer token");
       filterChain.doFilter(request, response);
       return;
     }
@@ -46,34 +47,36 @@ public class JwtAuthFilter implements Filter {
     try {
       Claims claims = jwtService.parse(token);
       String email = claims.getSubject();
-      System.out.println("JwtAuthFilter: Processing token for email: " + email);
+      System.out.println("JwtAuthFilter: Token valid for: " + email);
 
-      if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        System.out.println("JwtAuthFilter: User loaded: " + userDetails.getUsername());
+      UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+      System.out.println("JwtAuthFilter: User found: " + userDetails.getUsername());
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-            userDetails, null, userDetails.getAuthorities());
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+      UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+          userDetails, null, userDetails.getAuthorities());
+      authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-        System.out.println("JwtAuthFilter: Authentication set in SecurityContext");
-        response.setHeader("X-Auth-User", email);
-        response.setHeader("X-Auth-Success", "true");
-        response.setHeader("X-Auth-Debug", "Auth-Set");
-      } else {
-        System.out.println("JwtAuthFilter: Skipped auth set - email null or already authenticated");
-        response.setHeader("X-Auth-Debug", "Skipped: " + email);
-      }
+      // Create a new SecurityContext and set auth
+      SecurityContext context = SecurityContextHolder.createEmptyContext();
+      context.setAuthentication(authToken);
+      SecurityContextHolder.setContext(context);
+
+      System.out
+          .println("JwtAuthFilter: Auth set. Context auth: " + SecurityContextHolder.getContext().getAuthentication());
+      response.setHeader("X-Auth-User", email);
+      response.setHeader("X-Auth-Success", "true");
+      response.setHeader("X-Auth-Debug", "Auth-Set-V2");
+
     } catch (Exception e) {
-      System.out.println("JwtAuthFilter: Token validation failed: " + e.getMessage());
-      e.printStackTrace();
+      System.out.println("JwtAuthFilter: Error: " + e.getMessage());
       response.setHeader("X-Auth-Error", e.getMessage());
-      response.setHeader("X-Auth-Debug", "Exception: " + e.getMessage());
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       return;
     }
 
     filterChain.doFilter(request, response);
+
+    // Log after chain to see if auth persisted
+    System.out.println("JwtAuthFilter: After chain, auth: " + SecurityContextHolder.getContext().getAuthentication());
   }
 }
