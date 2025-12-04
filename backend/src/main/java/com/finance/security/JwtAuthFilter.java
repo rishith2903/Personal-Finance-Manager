@@ -54,11 +54,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         response.setHeader("X-Auth-User", email);
         response.setHeader("X-Auth-Success", "true");
+        response.setHeader("X-Auth-Debug", "Auth-Set");
+      } else {
+        response.setHeader("X-Auth-Debug", "Email-Null-Or-Context-Set: " + email);
       }
     } catch (Exception e) {
       System.out.println("JwtAuthFilter: Token validation failed: " + e.getMessage());
       e.printStackTrace();
       response.setHeader("X-Auth-Error", e.getMessage());
+      response.setHeader("X-Auth-Debug", "Exception: " + e.getMessage());
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       return;
     }
