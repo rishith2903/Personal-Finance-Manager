@@ -38,11 +38,9 @@ async function test() {
     });
 
     console.log('TX Status:', txRes.statusCode);
+    console.log('TX Body:', txRes.body);
     console.log('x-auth-success:', txRes.headers['x-auth-success']);
     console.log('x-auth-user:', txRes.headers['x-auth-user']);
-    console.log('x-auth-debug:', txRes.headers['x-auth-debug']);
-    console.log('x-auth-error:', txRes.headers['x-auth-error']);
-    console.log('Body:', txRes.body);
 }
 
 test().catch(console.error);
