@@ -12,4 +12,6 @@ public interface TransactionRepository extends MongoRepository<Transaction, Stri
   List<Transaction> findByUserIdOrderByTransactionDateDesc(String userId);
 
   List<Transaction> findByUserId(String userId);
+
+  void deleteByUserId(String userId);
 }
