@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { apiFetch } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Lightbulb, TrendingUp, Calendar, RefreshCw } from 'lucide-react';
+import { SpendingCharts } from '../components/Dashboard/SpendingCharts';
 
 export function InsightsPage() {
   const { user } = useAuth();
@@ -138,6 +139,9 @@ export function InsightsPage() {
               </p>
             </div>
           </div>
+
+          {/* Spending Charts */}
+          <SpendingCharts />
 
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex items-center gap-3 mb-6">
