@@ -29,20 +29,22 @@ The project leverages **AI-powered analytics** to automatically categorize trans
 
 ## 📸 Screenshots
 
-### Dashboard Overview
-![Dashboard](./screenshots/dashboard.png)
-*Real-time financial overview with income, spending, savings metrics, and category-wise breakdown*
+### Authentication
+| Login | Sign Up |
+|-------|--------|
+| ![Login](./docs/Login.png) | ![Sign Up](./docs/sign%20up.png) |
 
 ### AI Insights & Recommendations
-![AI Insights](./screenshots/insights.png)
+![AI Insights](./docs/Insights.png)
 *Personalized AI-powered financial recommendations based on spending patterns*
 
 ### Transaction Management
-![Transactions](./screenshots/transactions.png)
-*Smart transaction parsing and categorization with date filtering*
+| Transactions | Transaction History | AI Upload |
+|--------------|---------------------|-----------|
+| ![Transactions](./docs/Transactions.png) | ![Transaction History](./docs/Transactions%20history.png) | ![AI Upload](./docs/Transactions%20ai%20upload.png) |
 
 ### Category Analytics
-![Category Chart](./screenshots/category-chart.png)
+![Category Breakdown](./docs/Breakdown.png)
 *Visual breakdown of spending across different categories*
 
 ---
@@ -553,11 +555,11 @@ The Personal Finance Manager uses a **Rule-Based AI System** combined with **Sta
 | **Recommendation Relevance** | ~88% | User feedback on insight quality |
 
 ### Insight Generation Performance Graph
-![Performance Metrics](./screenshots/performance-graph.png)
-*Graph showing insight generation time vs. number of transactions*
+![Performance Metrics](./docs/insight_performance_graph.png)
+*Graph showing AI insight generation performance metrics*
 
 ### Category Classification Accuracy
-![Classification Accuracy](./screenshots/classification-accuracy.png)
+![Classification Accuracy](./docs/category_accuracy_chart.png)
 *Accuracy of automatic category assignment based on merchant keywords*
 
 ---
