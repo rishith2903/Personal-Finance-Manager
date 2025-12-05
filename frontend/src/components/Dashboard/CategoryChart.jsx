@@ -1,3 +1,4 @@
+import { useState } from 'react';
 
 const COLORS = [
   'rgb(16, 185, 129)',
@@ -14,6 +15,8 @@ const COLORS = [
 const INCOME_CATEGORIES = ['Income', 'Salary', 'Freelance', 'Bonus', 'Refund', 'Cashback'];
 
 export function CategoryChart({ data }) {
+  const [hoveredSegment, setHoveredSegment] = useState(null);
+
   // Filter out income categories to show only spending
   const spendingEntries = Object.entries(data)
     .filter(([cat]) => !INCOME_CATEGORIES.includes(cat))
@@ -65,25 +68,64 @@ export function CategoryChart({ data }) {
       <h3 className="text-lg font-semibold text-gray-900 mb-6">Spending by Category</h3>
 
       <div className="flex flex-col lg:flex-row items-center gap-8">
-        <div className="w-64 h-64 relative">
-          <svg viewBox="0 0 100 100" className="transform -rotate-0">
-            {segments.map((segment, index) => (
-              <g key={index} className="hover:opacity-80 transition-opacity cursor-pointer">
-                <path
-                  d={segment.path}
-                  fill={segment.color}
-                  stroke="white"
-                  strokeWidth="0.5"
-                />
-              </g>
-            ))}
-            <circle cx="50" cy="50" r="20" fill="white" />
-          </svg>
+        <div className="flex flex-col items-center">
+          <div className="w-64 h-64 relative">
+            <svg viewBox="0 0 100 100" className="transform -rotate-0">
+              {segments.map((segment, index) => (
+                <g
+                  key={index}
+                  className="transition-all cursor-pointer"
+                  onMouseEnter={() => setHoveredSegment(index)}
+                  onMouseLeave={() => setHoveredSegment(null)}
+                  style={{
+                    opacity: hoveredSegment === null || hoveredSegment === index ? 1 : 0.5,
+                    transform: hoveredSegment === index ? 'scale(1.02)' : 'scale(1)',
+                    transformOrigin: '50px 50px'
+                  }}
+                >
+                  <path
+                    d={segment.path}
+                    fill={segment.color}
+                    stroke="white"
+                    strokeWidth="0.5"
+                  />
+                </g>
+              ))}
+              <circle cx="50" cy="50" r="20" fill="white" />
+              {/* Center text showing hovered category or total */}
+              <text x="50" y="48" textAnchor="middle" className="text-[6px] font-bold fill-gray-700">
+                {hoveredSegment !== null ? segments[hoveredSegment].category : 'Total'}
+              </text>
+              <text x="50" y="55" textAnchor="middle" className="text-[5px] fill-gray-500">
+                ₹{hoveredSegment !== null ? segments[hoveredSegment].amount.toFixed(0) : spendingTotal.toFixed(0)}
+              </text>
+            </svg>
+
+            {/* Tooltip on hover */}
+            {hoveredSegment !== null && (
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 bg-gray-900 text-white text-xs py-2 px-3 rounded-lg shadow-lg z-10 whitespace-nowrap">
+                <div className="font-semibold">{segments[hoveredSegment].category}</div>
+                <div>₹{segments[hoveredSegment].amount.toFixed(2)} ({segments[hoveredSegment].percentage.toFixed(1)}%)</div>
+              </div>
+            )}
+          </div>
+
+          {/* Total Spending Display */}
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-500">Total Spending</p>
+            <p className="text-2xl font-bold text-gray-900">₹{spendingTotal.toFixed(2)}</p>
+          </div>
         </div>
 
         <div className="flex-1 space-y-3">
           {segments.map((segment, index) => (
-            <div key={index} className="flex items-center justify-between">
+            <div
+              key={index}
+              className={`flex items-center justify-between p-2 rounded-lg transition-all cursor-pointer ${hoveredSegment === index ? 'bg-gray-100' : 'hover:bg-gray-50'
+                }`}
+              onMouseEnter={() => setHoveredSegment(index)}
+              onMouseLeave={() => setHoveredSegment(null)}
+            >
               <div className="flex items-center gap-3">
                 <div
                   className="w-4 h-4 rounded"
