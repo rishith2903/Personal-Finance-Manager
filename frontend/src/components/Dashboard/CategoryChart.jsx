@@ -110,10 +110,22 @@ export function CategoryChart({ data, totalIncome = 0 }) {
             )}
           </div>
 
-          {/* Total Income Display */}
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-500">Total Income</p>
-            <p className="text-2xl font-bold text-emerald-600">₹{totalIncome.toFixed(2)}</p>
+          {/* Summary Display: Income, Spending, Savings */}
+          <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+            <div className="p-2 bg-emerald-50 rounded-lg">
+              <p className="text-xs text-gray-500">Income</p>
+              <p className="text-sm font-bold text-emerald-600">₹{totalIncome.toFixed(0)}</p>
+            </div>
+            <div className="p-2 bg-red-50 rounded-lg">
+              <p className="text-xs text-gray-500">Spending</p>
+              <p className="text-sm font-bold text-red-500">₹{spendingTotal.toFixed(0)}</p>
+            </div>
+            <div className={`p-2 rounded-lg ${totalIncome - spendingTotal >= 0 ? 'bg-blue-50' : 'bg-orange-50'}`}>
+              <p className="text-xs text-gray-500">Savings</p>
+              <p className={`text-sm font-bold ${totalIncome - spendingTotal >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+                ₹{(totalIncome - spendingTotal).toFixed(0)}
+              </p>
+            </div>
           </div>
         </div>
 
