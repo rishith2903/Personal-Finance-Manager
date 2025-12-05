@@ -50,8 +50,8 @@ export function TransactionsPage() {
         <button
           onClick={() => setActiveTab('manual')}
           className={`px-6 py-2 rounded-md font-medium transition-all ${activeTab === 'manual'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+            ? 'bg-white text-blue-600 shadow-sm'
+            : 'text-gray-600 hover:text-gray-900'
             }`}
         >
           Manual Entry
@@ -59,8 +59,8 @@ export function TransactionsPage() {
         <button
           onClick={() => setActiveTab('ai')}
           className={`px-6 py-2 rounded-md font-medium transition-all ${activeTab === 'ai'
-              ? 'bg-white text-emerald-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+            ? 'bg-white text-emerald-600 shadow-sm'
+            : 'text-gray-600 hover:text-gray-900'
             }`}
         >
           AI Upload
@@ -74,7 +74,10 @@ export function TransactionsPage() {
         <TransactionUpload onUploadComplete={loadTransactions} />
       )}
 
-      <TransactionList transactions={transactions} />
+      <TransactionList
+        transactions={transactions}
+        onDelete={(id) => setTransactions(prev => prev.filter(t => t.id !== id))}
+      />
     </div>
   );
 }

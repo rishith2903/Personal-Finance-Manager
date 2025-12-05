@@ -108,4 +108,41 @@ public class TransactionController {
 
     return ResponseEntity.ok(t);
   }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> delete(@PathVariable("id") String id, HttpServletRequest request) {
+    try {
+      String userId = authUtil.getUserId(request);
+      if (userId == null) {
+        return ResponseEntity.status(401).body("Unauthorized");
+      }
+
+      // Find the transaction
+      var transaction = repository.findById(id);
+      if (transaction.isEmpty()) {
+        return ResponseEntity.status(404).body("Transaction not found");
+      }
+
+      // Verify ownership
+      if (!transaction.get().getUserId().equals(userId)) {
+        return ResponseEntity.status(403).body("Forbidden - not your transaction");
+      }
+
+      // Get the month before deleting for insight update
+      String month = java.time.YearMonth.from(transaction.get().getTransactionDate()).toString();
+
+      // Delete the transaction
+      repository.deleteById(id);
+
+      // Update insights for the transaction month
+      insightService.generateAndUpsert(userId, month);
+
+      return ResponseEntity.ok().body("Transaction deleted successfully");
+
+    } catch (Exception e) {
+      System.out.println("TransactionController: DELETE ERROR - " + e.getClass().getName() + ": " + e.getMessage());
+      e.printStackTrace();
+      return ResponseEntity.status(500).body("Error: " + e.getMessage());
+    }
+  }
 }

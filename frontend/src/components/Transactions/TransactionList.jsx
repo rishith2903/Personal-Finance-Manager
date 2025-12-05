@@ -1,11 +1,32 @@
 import { useState } from 'react';
-import { ArrowDownRight, ArrowUpRight, Search, Filter } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Search, Filter, Trash2 } from 'lucide-react';
+import { apiFetch } from '../../lib/api';
 
 
-export function TransactionList({ transactions }) {
+export function TransactionList({ transactions, onDelete }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
+  const [deleting, setDeleting] = useState(null);
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this transaction?')) {
+      return;
+    }
+
+    setDeleting(id);
+    try {
+      await apiFetch(`/api/transactions/${id}`, { method: 'DELETE' });
+      if (onDelete) {
+        onDelete(id);
+      }
+    } catch (err) {
+      console.error('Failed to delete transaction:', err);
+      alert('Failed to delete transaction. Please try again.');
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   const categories = Array.from(new Set(transactions.map(t => t.category)));
 
@@ -88,6 +109,9 @@ export function TransactionList({ transactions }) {
               <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Amount
               </th>
+              <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -122,8 +146,8 @@ export function TransactionList({ transactions }) {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${transaction.type === 'credit'
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-red-100 text-red-700'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-red-100 text-red-700'
                     }`}>
                     {transaction.type}
                   </span>
@@ -133,6 +157,20 @@ export function TransactionList({ transactions }) {
                     }`}>
                     {transaction.type === 'credit' ? '+' : '-'}₹{transaction.amount.toFixed(2)}
                   </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  <button
+                    onClick={() => handleDelete(transaction.id)}
+                    disabled={deleting === transaction.id}
+                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Delete transaction"
+                  >
+                    {deleting === transaction.id ? (
+                      <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                  </button>
                 </td>
               </tr>
             ))}
