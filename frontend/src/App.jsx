@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -10,6 +10,13 @@ import { Navbar } from './components/Layout/Navbar';
 function AppContent() {
   const { user, loading } = useAuth();
   const [currentPage, setCurrentPage] = useState('dashboard');
+
+  // Reset to dashboard when user logs in
+  useEffect(() => {
+    if (user) {
+      setCurrentPage('dashboard');
+    }
+  }, [user]);
 
   if (loading) {
     return (
