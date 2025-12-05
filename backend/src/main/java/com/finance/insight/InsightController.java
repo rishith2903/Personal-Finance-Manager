@@ -17,7 +17,8 @@ public class InsightController {
   }
 
   @GetMapping
-  public ResponseEntity<?> get(@RequestParam(required = false) String month, HttpServletRequest request) {
+  public ResponseEntity<?> get(@RequestParam(name = "month", required = false) String month,
+      HttpServletRequest request) {
     try {
       System.out.println("InsightController: get called for month " + month);
       String userId = authUtil.getUserId(request);
