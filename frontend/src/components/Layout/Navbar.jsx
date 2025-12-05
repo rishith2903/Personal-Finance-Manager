@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useAuth } from '../../contexts/AuthContext';
-import { LayoutDashboard, Receipt, Lightbulb, LogOut, Wallet } from 'lucide-react';
+import { LayoutDashboard, Receipt, Lightbulb, User, Wallet } from 'lucide-react';
 
 export function Navbar({ currentPage, onNavigate }) {
   const { signOut } = useAuth();
@@ -9,6 +9,7 @@ export function Navbar({ currentPage, onNavigate }) {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'transactions', label: 'Transactions', icon: Receipt },
     { id: 'insights', label: 'Insights', icon: Lightbulb },
+    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   return (
@@ -31,25 +32,16 @@ export function Navbar({ currentPage, onNavigate }) {
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                    isActive
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${isActive
                       ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md'
                       : 'text-gray-600 hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   <span className="hidden sm:inline">{item.label}</span>
                 </button>
               );
             })}
-
-            <button
-              onClick={() => signOut()}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-red-600 hover:bg-red-50 transition-all ml-2"
-            >
-              <LogOut className="w-5 h-5" />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { InsightsPage } from './pages/InsightsPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { Navbar } from './components/Layout/Navbar';
 
 function AppContent() {
@@ -30,6 +31,7 @@ function AppContent() {
         {currentPage === 'dashboard' && <DashboardPage />}
         {currentPage === 'transactions' && <TransactionsPage />}
         {currentPage === 'insights' && <InsightsPage />}
+        {currentPage === 'profile' && <ProfilePage />}
       </main>
     </div>
   );
