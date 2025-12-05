@@ -2,6 +2,7 @@ package com.finance.demo;
 
 import com.finance.insight.Insight;
 import com.finance.insight.InsightRepository;
+import com.finance.insight.InsightService;
 import com.finance.transaction.Transaction;
 import com.finance.transaction.TransactionRepository;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,14 @@ public class DemoDataService {
 
         private final TransactionRepository transactionRepository;
         private final InsightRepository insightRepository;
+        private final InsightService insightService;
 
         public DemoDataService(TransactionRepository transactionRepository,
-                        InsightRepository insightRepository) {
+                        InsightRepository insightRepository,
+                        InsightService insightService) {
                 this.transactionRepository = transactionRepository;
                 this.insightRepository = insightRepository;
+                this.insightService = insightService;
         }
 
         public void seedDemoData(String userId) {
@@ -35,9 +39,9 @@ public class DemoDataService {
                 List<Transaction> transactions = createSampleTransactions(userId);
                 transactionRepository.saveAll(transactions);
 
-                // Create sample insights
-                Insight insight = createSampleInsight(userId);
-                insightRepository.save(insight);
+                // Generate insight from actual transactions (not hardcoded)
+                String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+                insightService.generateAndUpsert(userId, currentMonth);
         }
 
         private List<Transaction> createSampleTransactions(String userId) {
