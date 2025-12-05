@@ -97,7 +97,7 @@ export function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CategoryChart data={insight?.category_summary || {}} />
+        <CategoryChart data={insight?.category_summary || {}} totalIncome={insight?.total_income || 0} />
         <RecentTransactions transactions={transactions} />
       </div>
     </div>

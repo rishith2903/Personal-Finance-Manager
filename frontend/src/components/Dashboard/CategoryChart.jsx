@@ -14,7 +14,7 @@ const COLORS = [
 // Categories that represent income, not spending
 const INCOME_CATEGORIES = ['Income', 'Salary', 'Freelance', 'Bonus', 'Refund', 'Cashback'];
 
-export function CategoryChart({ data }) {
+export function CategoryChart({ data, totalIncome = 0 }) {
   const [hoveredSegment, setHoveredSegment] = useState(null);
 
   // Filter out income categories to show only spending
@@ -110,10 +110,10 @@ export function CategoryChart({ data }) {
             )}
           </div>
 
-          {/* Total Spending Display */}
+          {/* Total Income Display */}
           <div className="mt-4 text-center">
-            <p className="text-sm text-gray-500">Total Spending</p>
-            <p className="text-2xl font-bold text-gray-900">₹{spendingTotal.toFixed(2)}</p>
+            <p className="text-sm text-gray-500">Total Income</p>
+            <p className="text-2xl font-bold text-emerald-600">₹{totalIncome.toFixed(2)}</p>
           </div>
         </div>
 
