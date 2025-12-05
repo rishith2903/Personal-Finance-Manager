@@ -10,14 +10,18 @@ const COLORS = [
   'rgb(239, 68, 68)',
 ];
 
-export function CategoryChart({ data }) {
-  const total = Object.values(data).reduce((sum, val) => sum + val, 0);
+// Categories that represent income, not spending
+const INCOME_CATEGORIES = ['Income', 'Salary', 'Freelance', 'Bonus', 'Refund', 'Cashback'];
 
-  const entries = Object.entries(data)
-    .filter(([cat]) => cat !== 'Income')
+export function CategoryChart({ data }) {
+  // Filter out income categories to show only spending
+  const spendingEntries = Object.entries(data)
+    .filter(([cat]) => !INCOME_CATEGORIES.includes(cat))
     .sort(([, a], [, b]) => b - a);
 
-  if (entries.length === 0) {
+  const spendingTotal = spendingEntries.reduce((sum, [, val]) => sum + val, 0);
+
+  if (spendingEntries.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-sm p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Spending by Category</h3>
@@ -29,8 +33,8 @@ export function CategoryChart({ data }) {
   }
 
   let currentAngle = -90;
-  const segments = entries.map(([category, amount], index) => {
-    const percentage = (amount / total) * 100;
+  const segments = spendingEntries.map(([category, amount], index) => {
+    const percentage = (amount / spendingTotal) * 100;
     const angle = (percentage / 100) * 360;
     const startAngle = currentAngle;
     currentAngle += angle;
