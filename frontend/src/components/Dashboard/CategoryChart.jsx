@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 const COLORS = [
   'rgb(16, 185, 129)',
@@ -16,6 +16,8 @@ const INCOME_CATEGORIES = ['Income', 'Salary', 'Freelance', 'Bonus', 'Refund', '
 
 export function CategoryChart({ data, totalIncome = 0 }) {
   const [hoveredSegment, setHoveredSegment] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
 
   // Filter out income categories to show only spending
   const spendingEntries = Object.entries(data)
@@ -69,7 +71,19 @@ export function CategoryChart({ data, totalIncome = 0 }) {
 
       <div className="flex flex-col lg:flex-row items-center gap-8">
         <div className="flex flex-col items-center">
-          <div className="w-64 h-64 relative">
+          <div
+            ref={containerRef}
+            className="w-64 h-64 relative"
+            onMouseMove={(e) => {
+              if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                setMousePosition({
+                  x: e.clientX - rect.left,
+                  y: e.clientY - rect.top
+                });
+              }
+            }}
+          >
             <svg viewBox="0 0 100 100" className="transform -rotate-0">
               {segments.map((segment, index) => (
                 <g
@@ -101,9 +115,16 @@ export function CategoryChart({ data, totalIncome = 0 }) {
               </text>
             </svg>
 
-            {/* Tooltip on hover */}
+            {/* Tooltip on hover - follows cursor */}
             {hoveredSegment !== null && (
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 bg-gray-900 text-white text-xs py-2 px-3 rounded-lg shadow-lg z-10 whitespace-nowrap">
+              <div
+                className="absolute bg-gray-900 text-white text-xs py-2 px-3 rounded-lg shadow-lg z-10 whitespace-nowrap pointer-events-none"
+                style={{
+                  left: mousePosition.x + 15,
+                  top: mousePosition.y - 10,
+                  transform: 'translateY(-100%)'
+                }}
+              >
                 <div className="font-semibold">{segments[hoveredSegment].category}</div>
                 <div>₹{segments[hoveredSegment].amount.toFixed(2)} ({segments[hoveredSegment].percentage.toFixed(1)}%)</div>
               </div>

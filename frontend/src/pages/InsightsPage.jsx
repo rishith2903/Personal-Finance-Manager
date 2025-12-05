@@ -158,65 +158,68 @@ export function InsightsPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Top Merchants</h2>
+          {/* Top Merchants and Category Breakdown side by side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Top Merchants</h2>
 
-            <div className="space-y-4">
-              {insight.top_merchants.map((merchant, index) => {
-                const percentage = (merchant.amount / insight.total_spend) * 100;
-                return (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                          {index + 1}
-                        </div>
-                        <span className="font-medium text-gray-900">{merchant.merchant}</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-gray-900">₹{merchant.amount.toFixed(2)}</div>
-                        <div className="text-sm text-gray-500">{percentage.toFixed(1)}%</div>
-                      </div>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Category Breakdown</h2>
-
-            <div className="space-y-4">
-              {Object.entries(insight.category_summary)
-                .filter(([cat]) => cat !== 'Income')
-                .sort(([, a], [, b]) => b - a)
-                .map(([category, amount], index) => {
-                  const percentage = (amount / insight.total_spend) * 100;
+              <div className="space-y-4">
+                {insight.top_merchants.map((merchant, index) => {
+                  const percentage = (merchant.amount / insight.total_spend) * 100;
                   return (
                     <div key={index} className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-medium text-gray-900">{category}</span>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                            {index + 1}
+                          </div>
+                          <span className="font-medium text-gray-900">{merchant.merchant}</span>
+                        </div>
                         <div className="text-right">
-                          <div className="font-semibold text-gray-900">₹{amount.toFixed(2)}</div>
+                          <div className="font-semibold text-gray-900">₹{merchant.amount.toFixed(2)}</div>
                           <div className="text-sm text-gray-500">{percentage.toFixed(1)}%</div>
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
-                          className="bg-gradient-to-r from-blue-500 to-cyan-600 h-2 rounded-full transition-all"
+                          className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
                     </div>
                   );
                 })}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Category Breakdown</h2>
+
+              <div className="space-y-4">
+                {Object.entries(insight.category_summary)
+                  .filter(([cat]) => cat !== 'Income')
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([category, amount], index) => {
+                    const percentage = (amount / insight.total_spend) * 100;
+                    return (
+                      <div key={index} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-gray-900">{category}</span>
+                          <div className="text-right">
+                            <div className="font-semibold text-gray-900">₹{amount.toFixed(2)}</div>
+                            <div className="text-sm text-gray-500">{percentage.toFixed(1)}%</div>
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-gradient-to-r from-blue-500 to-cyan-600 h-2 rounded-full transition-all"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           </div>
         </div>
